@@ -1,0 +1,156 @@
+# Depois de todo ambiente configurado siga os seguintes passos:
+
+1 - Para criar um projeto com Poetry chamado "fast_zero":
+    > poetry new fast_zero
+    > cd fast_zero
+
+2 - Editar o arquivo "pyproject.toml":
+    alterar a versão python = "^3.12" para "3.12.*"
+    salvar
+
+3 - Definir a versão do python no pyenv a ser utilizada:
+    > pyenv local 3.12.3
+
+4 - Criar virtualenv do Poetry project:
+    > poetry install
+
+5 - Incluir a biblioteca do FastAPI
+    > poetry add fastapi
+
+6 - Criar um arquivo chamado app.py dentro da subpasta fast_zero
+    fast_zero/app.py
+
+7 - Arquivo app.py com o seguinte conteúdo:
+    # app.py
+    def read_root():
+        return {"message": "Olá mundo!"}
+
+8 - Rodar arquivo app.py no terminal:
+    > python -i fast_zero/app.py
+
+9 - Invocar function:
+    >>> read_root()
+    retorno esperado:
+    {'message': 'Olá mundo!'}
+
+10 - Altere o arquivo app.py para:
+    # app.py
+    from fastapi import FastAPI
+
+    app = FastAPI()
+
+    @app.get("/")
+    def read_root():
+        return {"message": "Olá mundo!"}
+
+11 - Ative o ambiente virtual:
+    > poetry shell
+
+12 - Para rodar o server do FastAPI:
+    > fastapi dev .\fast_zero\app.py
+
+13 - Para ver o swagger:
+    http://127.0.0.1:8000/docs
+
+14 - Para ver a documentação em OpenAPI:
+    http://127.0.0.1:8000/redoc
+
+
+# Instalando pacotes e ferramentas proffisionais para trabalhar com FastAPI:
+15 - Instalar Ruff, uma dependência de desenvolvimento que é um analisador stático (Linter) e um formatador de código (Code Quality Formater)
+    > poetry add --group dev ruff
+
+16 - Configure o Ruff, abra o arquivo "pyproject.toml" e inclua:
+    [tool.ruff]
+    line-length = 79
+    extend-exclude = ['migrations']
+
+    [tool.ruff.lint]
+    preview = true
+    select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+    [tool.ruff.format]
+    preview = true
+    quote-style = 'single'
+
+17 - Significado das features "select" da configuração anterior:
+    Durante a análise estática do código, queremos buscar por coisas específicas. No Ruff, 
+    precisamos dizer exatamente o que ele deve analisar. Isso é feito por códigos. Usaremos estes:
+
+    I (Isort): Checagem de ordenação de imports em ordem alfabética
+    F (Pyflakes): Procura por alguns erros em relação a boas práticas de código
+    E (Erros pycodestyle): Erros de estilo de código
+    W (Avisos pycodestyle): Avisos de coisas não recomendadas no estilo de código
+    PL (Pylint): Como o F, também procura por erros em relação a boas práticas de código
+    PT (flake8-pytest): Checagem de boas práticas do Pytest
+
+18 - Para fazer a verificação statica rode:
+    > ruff check .
+
+19 - Para fazer a correção após verificação:
+    > ruff check . --fix
+
+20 - Para formatar os arquivos conforme especificado na configuração:
+    > ruff format .
+
+21 - Instalando bibliotecas de testes:
+    > poetry add --group dev pytest pytest-cov
+
+22 - Configure o Pytest, abra o arquivo "pyproject.toml" e inclua:
+    [tool.pytest.ini_options]
+    pythonpath = "."
+    addopts = '-p no:warnings'
+
+23 - Para rodar os testes:
+    > pytest
+    > pytest --cov=fast_zero
+    > pytest --cov=fast_zero -vv
+
+24 - para gerar resumo de coverage em HTML:
+    > coverage HTML
+
+25 - Instalando Taskipy, biblioteca de executor de tarefas (task runner):
+    > poetry add --group dev taskipy
+
+26 - Configure o Taskipy, abra o arquivo "pyproject.toml" e inclua:
+    [tool.taskipy.tasks]
+    lint = 'ruff check . && ruff check . --diff'
+    format = 'ruff check . --fix && ruff format .'
+    run = 'fastapi dev fast_zero/app.py'
+    pre_test = 'task lint'
+    test = 'pytest -s -x --cov=fast_zero -vv'
+    post_test = 'coverage html'
+
+27 - Comandos para rodar com task, use o comando list para listar os comandos:
+    > task --list
+
+28 - Criando arquivo de teste, todo teste deve começar com "test_", e devem ser escritos dentro da pasta "test":
+    criar arquivo "test_app.py" com o conteúdo:
+    from fastapi.testclient import TestClient
+
+    from fast_zero.app import app
+    from http import HTTPStatus
+
+    def test_read_root_deve_retornar_ok_e_ola_mundo():
+        cliente = TestClient(app) #Arrange (organização)
+
+        response = cliente.get("/") #Act (acao)
+
+        #Assert (verificacao)
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {"message": "Olá mundo!"}
+
+29 - Rode os teste:
+    > taks test
+
+30 - Crie arquivo ".gitignore":
+    > ignr -p python > .gitignore
+
+31 - Inicializar o git no projeto:
+    > git init .
+    > git add .
+    > git commit -m "Iniciando o Projeto"
+
+32 - Criando Repositorio no github com GH:
+    > gh repo create
+    se o comando não funcionar lembre-se de fazer autenticação
