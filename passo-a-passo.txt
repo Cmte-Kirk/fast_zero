@@ -146,3 +146,11 @@
 30 - Crie arquivo ".gitignore":
     > ignr -p python > .gitignore
 
+31 - Inicializar o git no projeto:
+    > git init .
+    > git add .
+    > git commit -m "Iniciando o Projeto"
+
+32 - Criando Repositorio no github com GH:
+    > gh repo create
+    se o comando não funcionar lembre-se de fazer autenticação
